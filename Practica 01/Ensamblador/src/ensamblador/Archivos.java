@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.io.*;
 
 public class Archivos {
-    File archivo, archivo2;
+    File archivo;
     FileReader fr;
     FileWriter fw;
     BufferedReader br;
@@ -62,7 +62,7 @@ public class Archivos {
         try {
             fw = new FileWriter(archivo);
             bw = new BufferedWriter(fw);
-            bw.write("LINEA\tETQ\tCODOP\tOPER\tMODOS");
+            bw.write("LINEA\tETQ\tCODOP\tOPER");
             bw.newLine();
             bw.write("------------------------------------------------------------");
             bw.newLine();
@@ -70,25 +70,7 @@ public class Archivos {
         catch(IOException ioe) {
             System.out.println("\nNo se pudo abrir el archivo");            
         }
-     }
-    
-    public void AbrirTABOP() {
-        JFileChooser seleccArchivo = new JFileChooser();
-        if(seleccArchivo.showOpenDialog(seleccArchivo) == JFileChooser.APPROVE_OPTION) {
-            if(seleccArchivo.getSelectedFile().getName().substring(seleccArchivo.getSelectedFile().getName().length()-9).toUpperCase().equals("TABOP.TXT")){
-                try {
-                    archivo2 = seleccArchivo.getSelectedFile();
-                    fr = new FileReader(archivo2);
-                    br = new BufferedReader(fr);
-                }
-                catch(IOException ioe) {
-                    System.out.println("\nNo se pudo abrir el archivo");
-                }
-            }
-        }
-        else
-            System.out.println("\nNo selecciono nada");
-    }
+     }    
     
     public void AbrirERR() {
         try {
@@ -106,11 +88,9 @@ public class Archivos {
     
     public void EscribeLineaINST(Linea linea) {
         try {
-            if(linea.codop.compareTo("END") != 0) {
-            buffer = linea.numLinea + "\t" + linea.etiqueta + "\t" + linea.codop + "\t" + linea.operando + "\t" + linea.modos;
+            buffer = linea.numLinea + "\t" + linea.etiqueta + "\t" + linea.codop + "\t" + linea.operando;
             bw.write(buffer);
             bw.newLine();
-            }
         }
         catch(IOException ioe) {
             System.out.println("\nNo se pudo abrir el archivo");
@@ -141,18 +121,7 @@ public class Archivos {
         return buffer;
     }
     
-    public String LeeLineaTABOP() {
-        buffer = null;
-        try{
-            buffer = br.readLine();
-        }
-        catch(IOException ioe){
-            System.out.println("\nNo se pudo abrir el archivo");
-        }
-        return buffer;
-    }
-    
-    public void CerrarLectura() {
+    public void CerrarASM() {
         try{
             br.close();
             fr.close();
@@ -162,7 +131,7 @@ public class Archivos {
         }
     }
     
-    public void CerrarEscritura() {
+    public void Cerrar() {
         try{
             bw.close();
             fw.close();
