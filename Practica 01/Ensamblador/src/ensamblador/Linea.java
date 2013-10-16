@@ -14,8 +14,7 @@ import java.util.*;
 public class Linea {    
     int numLinea;
     String etiqueta, codop, operando, tipoError, instruccion, modo, modos, codMaquina, byteCalculado, byteporCalcular, totalBytes;
-    boolean esComentario, fin;
-    String orden[] = new String[12];
+    boolean esComentario, fin, encontrado;
     
     public Linea(int numeroLinea) {        
         numLinea = numeroLinea;
@@ -40,8 +39,7 @@ public class Linea {
                         esComentario = true;  
                     else if(token.countTokens() == 1) {                        
                         codop = token.nextToken();                                                 
-                    } 
-                    
+                    }                     
                     else if(token.countTokens() == 2){                        
                         codop = token.nextToken();
                         operando = token.nextToken();
@@ -79,7 +77,7 @@ public class Linea {
             return formatoCorrecto;
     }
     
-    public boolean ValidaToken(String linea, Lista lista) {
+    public boolean ValidaToken(String linea, Lista lista, ModosDireccionamiento dir) {
         boolean formatoCorrecto = true;
         if(SepararTokens(linea)){
             if(etiqueta != null){
@@ -89,32 +87,34 @@ public class Linea {
             } 
         }
         if(codop != null && formatoCorrecto) {
-            if(codop.toUpperCase().equals("END"))
+            if(codop.toUpperCase().equals("END") && operando.toUpperCase().equals("NULL"))
                 fin = true;
+            else if(codop.toUpperCase().equals("END") && !operando.toUpperCase().equals("NULL")) {
+                fin = true;
+                tipoError = "END no Puede Llevar Operando";
+            }
+                
             else if(!codop.matches("[a-zA-Z]((\\.[a-zA-Z]{0,3}|[a-zA-Z]{0,1}\\.[a-zA-Z]{0,2}|[a-zA-Z]{0,2}\\.[a-zA-Z]{0,1}|[a-zA-Z]{0,3}\\.)|[a-zA-Z]{0,4})")) {
                 tipoError = "Codigo de Operacion Invalido";
                 formatoCorrecto = false;
             }
             else {
                 modos = lista.Buscar(codop, operando);
-                if(lista.expCorrecta) 
-                    modo = modos;
-                else { 
+                if(lista.expCorrecta) {      
+                    if(SeparaModos(modos, operando, dir)) 
+                        modo = dir.tipoModo;
+                    else
+                        tipoError = dir.error;                
+                }
+                else if(!esComentario){ 
                     tipoError = lista.error; 
                     formatoCorrecto = false; 
             }
             }
-        } 
-        if(operando != null && formatoCorrecto){
-            if(!operando.matches(".+")){
-                tipoError = "Operando Invalido";
-                formatoCorrecto = false;
-            }
         }
     }
     else formatoCorrecto = false;
-        return formatoCorrecto;
-    
+    return formatoCorrecto;
     }
 
     public void SeparaTABOP(String linea, Lista lista) {
@@ -135,4 +135,109 @@ public class Linea {
         }   
      }
     
+     public boolean SeparaModos(String mod, String ope, ModosDireccionamiento dir) {
+        Vector<String> tipoModo = new Vector<String>();
+        boolean formatoCorrecto = true;
+        encontrado = false;
+        StringTokenizer token = new StringTokenizer(mod, "|");
+        while(token.hasMoreTokens())
+            tipoModo.add(token.nextToken());     
+        
+        dir.errorEtiqueta = dir.formaIMM = dir.formaEXT = dir.formaIDX = dir.formaIDX1 = dir.formaIDX2 = dir.formaIDX2C = dir.formaIDX_ID = dir.formaIDX_ACU = dir.formaIDX_ACU_IND = dir.formaREL = false; 
+        int x = 0;
+        while(x < tipoModo.size() && !encontrado && !dir.errorEtiqueta) {
+            if(tipoModo.get(x).equals("INH")) { 
+                if(dir.INH(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("IMM8") || tipoModo.get(x).equals("IMM16") || tipoModo.get(x).equals("IMM") && !encontrado) { 
+                if(dir.IMM(ope, tipoModo.get(x))) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("DIR") && !encontrado && !dir.formaIMM) { 
+                if(dir.DIR(ope)) { 
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("EXT") && !encontrado && !dir.formaIMM) { 
+                if(dir.EXT(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("IDX") && !encontrado && !dir.formaIMM) { 
+                if(dir.IDX(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else if(!dir.formaIDX) {
+                        if(dir.IDX_ID(ope)) {
+                        formatoCorrecto = true;
+                        encontrado = true;
+                    }
+                }
+                else if(!dir.formaIDX && !dir.formaIDX_ID) {
+                        if(dir.IDX_ACU(ope) && !dir.formaIDX && !dir.formaIDX_ID) {
+                            formatoCorrecto = true;
+                            encontrado = true;
+                    }
+                }
+                else formatoCorrecto = false;
+            }                 
+            else if(tipoModo.get(x).equals("IDX1") && !encontrado && !dir.formaIMM && !dir.formaEXT && !dir.formaIDX && !dir.formaIDX_ID && !dir.formaIDX_ACU) { 
+                if(dir.IDX1(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("IDX2") && !encontrado && !dir.formaIMM && !dir.formaEXT && !dir.formaIDX && !dir.formaIDX_ID && !dir.formaIDX_ACU) { 
+                if(dir.IDX2(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("[IDX2]") && !encontrado && !dir.formaIMM && !dir.formaEXT && !dir.formaIDX && !dir.formaIDX1 && !dir.formaIDX2 && !dir.formaIDX_ID && !dir.formaIDX_ACU) { 
+                if(dir.IDX2C(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("[D,IDX]") && !encontrado && !dir.formaIMM && !dir.formaEXT && !dir.formaIDX && !dir.formaIDX1 && !dir.formaIDX2 && !dir.formaIDX2C && !dir.formaIDX_ID && !dir.formaIDX_ACU) { 
+                if(dir.IDX_ACU_IND(ope)) {
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }
+            else if(tipoModo.get(x).equals("REL8") || tipoModo.get(x).equals("REL9") || tipoModo.get(x).equals("REL16") && !encontrado && !dir.formaIMM) { 
+                if(dir.REL(ope, tipoModo.get(x))) { 
+                   formatoCorrecto = true;
+                   encontrado = true;
+                }
+                else formatoCorrecto = false;
+            }            
+
+            if(!dir.opeCorrecto && ((tipoModo.get(x).equals("DIR") && tipoModo.get(x+1).equals("EXT")) || (tipoModo.get(x).equals("IDX") && tipoModo.get(x+1).equals("IDX1")) || (tipoModo.get(x).equals("IDX1") && tipoModo.get(x+1).equals("IDX2")) || (tipoModo.get(x).equals("[D,IDX]") && tipoModo.get(x+1).equals("[IDX2]")))) 
+                x++;          
+            else if(!dir.opeCorrecto) 
+                x = tipoModo.size();
+            else
+                x++;            
+        }
+        if(!encontrado && !dir.formaIMM && !dir.formaEXT && !dir.formaIDX && !dir.formaIDX1 && !dir.formaIDX2 && !dir.formaIDX2C && !dir.formaIDX_ID && !dir.formaIDX_ACU && !dir.formaIDX_ACU_IND && !dir.formaREL)
+            dir.error = "Formato de Operando no Valido para Ningun Modo de Direccionamiento";
+        return formatoCorrecto; 
+     }
 }

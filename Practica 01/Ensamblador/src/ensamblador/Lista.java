@@ -9,22 +9,21 @@ package ensamblador;
  * @author JAVIER
  */
 
-import java.util.*;
-
 public class Lista {    
-    String modos, error;
+    String modos, error, cambModo;       
     boolean expCorrecta, bandera, bandera2;
-    String orden[], modo2;
+    int tokens, t, x;
     
     class Nodo {
         String instruccion, modo, codMaquina, byteCalculado, byteporCalcular, totalBytes;;
         Nodo sig;
     }
     
-    private Nodo raiz;
+    private Nodo primero, ultimo;
     
     Lista() {
-        raiz = null;
+        primero = null;
+        ultimo = null;
     }
     
     public void Insertar(String inst, String mod, String codM, String bCal, String bporCal, String total) {
@@ -36,53 +35,58 @@ public class Lista {
         nuevo.byteCalculado = bCal;
         nuevo.byteporCalcular = bporCal;
         nuevo.totalBytes = total;
-        if(raiz == null){
-            nuevo.sig = null;
-            raiz = nuevo;
+        nuevo.sig = null;
+        if(primero == null){
+            primero = nuevo;
+            ultimo = nuevo;
         }
         else{
-            nuevo.sig = raiz;
-            raiz = nuevo;
+            ultimo.sig = nuevo;
+            ultimo = nuevo;
         }
     }
     
     public String Buscar(String inst, String op) {
-        Nodo reco = raiz;
+        Nodo reco = primero;
         bandera = true;
         bandera2 = true;
         modos = "";
+        cambModo = "";
         error = "";
         expCorrecta = false;
         while(reco != null) {
             if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.compareTo("0") > 0 && op != "NULL") {
                 modos = modos + reco.modo;
-                modos = modos + ",";
+                modos = modos + "|";
                 expCorrecta = true;
             }
-            else if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.compareTo("0") > 0 && op == "NULL") {
-                expCorrecta = false;
-                bandera2 = false;
-            }
-            else if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.compareTo("0") == 0 && op == "NULL") {
+            else if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.equals("0") && op == "NULL") {
                 modos = modos + reco.modo;
-                modos = modos + ",";
+                modos = modos + "|";
                 expCorrecta = true;
             } 
             else if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.equals("0") && op != "NULL") {
                 expCorrecta = false;
                 bandera = false;
             }
+            else if(inst.toUpperCase().equals(reco.instruccion) && reco.modo.equals("INH") && reco.byteporCalcular.compareTo("0") > 0 && op == "NULL") {
+                modos = modos + reco.modo;
+                modos = modos + "|";
+                expCorrecta = true;
+            }
+            else if(inst.toUpperCase().equals(reco.instruccion) && !reco.modo.equals("INH") && reco.byteporCalcular.compareTo("0") > 0 && op == "NULL") {
+                expCorrecta = false;
+                bandera2 = false;
+            }
           reco = reco.sig;
-        }      
-        if(inst.compareTo("ORG") == 0) {
+        } 
+        if(inst.toUpperCase().equals("ORG")) 
             expCorrecta = true;
-            return modos = "";            
-        }
-        
-        if(expCorrecta)
-            return modos.substring(0, modos.length()-2);
+
+        if(expCorrecta) 
+            return modos;
         else if(!bandera && !expCorrecta) return error = "No puede tener Operando";
         else if(!bandera2 && !expCorrecta) return error = "Tiene que llevar un Operando";
         else return error = "No se encontro Codigo de Operacion";        
-    }     
+    }        
 }

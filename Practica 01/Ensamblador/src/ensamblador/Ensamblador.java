@@ -24,6 +24,7 @@ public class Ensamblador {
         Archivos ERR = new Archivos();
         Archivos TABOP = new Archivos(); 
         Lista listaTABOP = new Lista();
+        ModosDireccionamiento dir = new ModosDireccionamiento();
         
         File auxFile;
         String linea;
@@ -32,15 +33,16 @@ public class Ensamblador {
         linea1 = new Linea(numLinea);     
         ArrayList<Linea> lista = new ArrayList<Linea>();
        
-        TABOP.AbrirTABOP();                
+        ASM.AbrirASM();
+        auxFile = ASM.archivo;
+        TABOP.AbrirTABOP(auxFile);               
         while ((linea = TABOP.LeeLineaTABOP()) != null) {
             linea1.SeparaTABOP(linea, listaTABOP);
         }
         TABOP.CerrarLectura();        
-        
-        ASM.AbrirASM();        
+              
         while((linea = ASM.LeeLineaASM()) != null && !linea1.fin) {
-            linea1.ValidaToken(linea, listaTABOP);
+            linea1.ValidaToken(linea, listaTABOP, dir);
             lista.add(linea1);
             if(!linea1.fin) {
                 numLinea++;
@@ -65,13 +67,11 @@ public class Ensamblador {
         
         if(linea1.fin == false) {
             linea1.numLinea = linea1.numLinea - 1;
-            linea1.tipoError = "NO SE ENCONTRO LA ETIQUETA... *END*";
+            linea1.tipoError = "No se Encontro la Etiqueta END";
             ERR.EscribeLineaERR(linea1);
         }
         
         INST.CerrarEscritura();
         ERR.CerrarEscritura();        
-        
-        // TODO code application logic here
     }
 }

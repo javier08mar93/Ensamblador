@@ -19,25 +19,7 @@ public class Archivos {
     BufferedReader br;
     BufferedWriter bw;
     String buffer;   
-    
-    public void AbrirASM() {        
-        JFileChooser seleccArchivo = new JFileChooser();
-        if(seleccArchivo.showOpenDialog(seleccArchivo) == JFileChooser.APPROVE_OPTION) {
-            if(seleccArchivo.getSelectedFile().getName().substring(seleccArchivo.getSelectedFile().getName().length()-4).toUpperCase().equals(".ASM")){
-                try {
-                    archivo = seleccArchivo.getSelectedFile();
-                    fr = new FileReader(archivo);
-                    br = new BufferedReader(fr);
-                }
-                catch(IOException ioe) {
-                    System.out.println("\nNo se pudo abrir el archivo");
-                }
-            }
-        }
-        else
-            System.out.println("\nNo selecciono nada");
-    }
-    
+        
     public void CreaINST(File archivo2) {
         try {     
             archivo = new File(archivo2.getPath().substring(0, archivo2.getPath().length()-4)+".INST");
@@ -72,13 +54,13 @@ public class Archivos {
         }
      }
     
-    public void AbrirTABOP() {
+    public void AbrirASM() {        
         JFileChooser seleccArchivo = new JFileChooser();
         if(seleccArchivo.showOpenDialog(seleccArchivo) == JFileChooser.APPROVE_OPTION) {
-            if(seleccArchivo.getSelectedFile().getName().substring(seleccArchivo.getSelectedFile().getName().length()-9).toUpperCase().equals("TABOP.TXT")){
+            if(seleccArchivo.getSelectedFile().getName().substring(seleccArchivo.getSelectedFile().getName().length()-4).toUpperCase().equals(".ASM")){
                 try {
-                    archivo2 = seleccArchivo.getSelectedFile();
-                    fr = new FileReader(archivo2);
+                    archivo = seleccArchivo.getSelectedFile();
+                    fr = new FileReader(archivo);
                     br = new BufferedReader(fr);
                 }
                 catch(IOException ioe) {
@@ -88,6 +70,17 @@ public class Archivos {
         }
         else
             System.out.println("\nNo selecciono nada");
+    }
+    
+    public void AbrirTABOP(File archivo) {
+        archivo2 = new File(archivo.getParentFile(), "TABOP.txt");
+        try {
+                fr = new FileReader(archivo2);
+                br = new BufferedReader(fr);
+            }
+        catch(IOException ioe) {
+                System.out.println("\nNo se pudo abrir el archivo");
+            }
     }
     
     public void AbrirERR() {
@@ -106,11 +99,10 @@ public class Archivos {
     
     public void EscribeLineaINST(Linea linea) {
         try {
-            if(linea.codop.compareTo("END") != 0) {
-            buffer = linea.numLinea + "\t" + linea.etiqueta + "\t" + linea.codop + "\t" + linea.operando + "\t" + linea.modos;
+            if(linea.codop.toUpperCase().equals("ORG")) linea.modo = " ";
+            buffer = linea.numLinea + "." + "\t" + linea.etiqueta + "\t" + linea.codop + "\t" + linea.operando + "\t" + linea.modo;
             bw.write(buffer);
             bw.newLine();
-            }
         }
         catch(IOException ioe) {
             System.out.println("\nNo se pudo abrir el archivo");
@@ -120,7 +112,7 @@ public class Archivos {
     
     public void EscribeLineaERR(Linea linea) {
         try {
-            buffer = linea.numLinea + ". " + linea.tipoError;
+            buffer = linea.numLinea + "." + "\t" + linea.tipoError;
             bw.write(buffer);
             bw.newLine();
         }
