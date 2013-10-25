@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.io.*;
 
 public class Archivos {
-    File archivo, archivo2, archivo3;
+    File archivo, archivo2;
     FileReader fr;
     FileWriter fw;
     BufferedReader br;
@@ -40,51 +40,13 @@ public class Archivos {
         }
     }
     
-    public void CreaTDS(File archivo2) {
-        try {
-            archivo = new File(archivo2.getPath().substring(0, archivo2.getPath().length()-4)+".TDS");
-            archivo.createNewFile();
-        }
-        catch(IOException ioe) {
-            System.out.println("\nNo se pudo crear el archivo");
-        }
-    }
-    
     public void AbrirINST() {
         try {
             fw = new FileWriter(archivo);
             bw = new BufferedWriter(fw);
-            bw.write("LINEA\tCONTLOC\tETQ\tCODOP\tOPER\tMODIR");
+            bw.write("LINEA\tETQ\tCODOP\tOPER\tMODOS");
             bw.newLine();
-            bw.write("------------------------------------------------------------------------");
-            bw.newLine();
-        }
-        catch(IOException ioe) {
-            System.out.println("\nNo se pudo abrir el archivo");            
-        }
-     }
-    
-    public void AbrirERR() {
-        try {
-            fw = new FileWriter(archivo);
-            bw = new BufferedWriter(fw);
-            bw.write("LINEA\tERROR");
-            bw.newLine();
-            bw.write("------------------------------------------------------------------------");
-            bw.newLine();
-        }
-        catch(IOException ioe) {
-            System.out.println("\nNo se pudo abrir el archivo");            
-        }
-     }
-    
-    public void AbrirTDS() {
-        try {
-            fw = new FileWriter(archivo);
-            bw = new BufferedWriter(fw);
-            bw.write("ETQ\tVALOR");
-            bw.newLine();
-            bw.write("-----------------------------");
+            bw.write("------------------------------------------------------------");
             bw.newLine();
         }
         catch(IOException ioe) {
@@ -121,16 +83,32 @@ public class Archivos {
             }
     }
     
+    public void AbrirERR() {
+        try {
+            fw = new FileWriter(archivo);
+            bw = new BufferedWriter(fw);
+            bw.write("LINEA\tERROR");
+            bw.newLine();
+            bw.write("------------------------------------------------------------");
+            bw.newLine();
+        }
+        catch(IOException ioe) {
+            System.out.println("\nNo se pudo abrir el archivo");            
+        }
+     }
+    
     public void EscribeLineaINST(Linea linea) {
         try {
-            buffer = linea.numLinea + "." + "\t" + linea.contLoc  + "\t" + linea.etiqueta + "\t" + linea.codop + "\t" + linea.operando + "\t" + linea.modo;
+            if(linea.codop.toUpperCase().equals("ORG")) linea.modo = " ";
+            buffer = linea.numLinea + "." + "\t" + linea.etiqueta + "\t" + linea.codop + "\t" + linea.operando + "\t" + linea.modo;
             bw.write(buffer);
             bw.newLine();
         }
         catch(IOException ioe) {
             System.out.println("\nNo se pudo abrir el archivo");
         }
-    }    
+    }
+    
     
     public void EscribeLineaERR(Linea linea) {
         try {
@@ -141,18 +119,8 @@ public class Archivos {
         catch(IOException ioe) {
             System.out.println("\nNo se pudo abrir el archivo");
         }
-    }  
-    
-    public void EscribeLineaTDS(Linea linea) {
-        try {
-            buffer = linea.etiqueta + "\t" + linea.contLoc;
-            bw.write(buffer);
-            bw.newLine();
-        }
-        catch(IOException ioe) {
-            System.out.println("\nNo se pudo abrir el archivo");
-        }
     }
+    
     
     public String LeeLineaASM() {
         buffer = null;
