@@ -22,45 +22,64 @@ public class Ensamblador {
         Archivos ASM = new Archivos();
         Archivos INST = new Archivos();
         Archivos ERR = new Archivos();
+        Archivos TDS = new Archivos();
         Archivos TABOP = new Archivos(); 
         Lista listaTABOP = new Lista();
         ModosDireccionamiento dir = new ModosDireccionamiento();
+        Directivas direct = new Directivas();
         
         File auxFile;
         String linea;
         int numLinea = 1;
+        String cont = "0";
+        boolean auxORG = false;
         Linea linea1, lineaAux;
         linea1 = new Linea(numLinea);     
         ArrayList<Linea> lista = new ArrayList<Linea>();
-       
+        Vector<String> directiva = new Vector<String>();
+        Vector<String> etiq = new Vector<String>();
+        
         ASM.AbrirASM();
         auxFile = ASM.archivo;
-        TABOP.AbrirTABOP(auxFile);               
+        
+        TABOP.AbrirTABOP(auxFile);         
         while ((linea = TABOP.LeeLineaTABOP()) != null) {
             linea1.SeparaTABOP(linea, listaTABOP);
         }
-        TABOP.CerrarLectura();        
-              
+        TABOP.CerrarLectura();  
+             
         while((linea = ASM.LeeLineaASM()) != null && !linea1.fin) {
-            linea1.ValidaToken(linea, listaTABOP, dir);
+            linea1.auxCont = cont;
+            linea1.unORG = auxORG;
+            linea1.ValidaToken(linea, listaTABOP, dir, direct, linea1.auxCont, linea1.unORG, directiva, etiq);
             lista.add(linea1);
             if(!linea1.fin) {
+                cont = linea1.auxCont;
+                auxORG = linea1.unORG;
                 numLinea++;
-                linea1 = new Linea(numLinea);
-            }
+                linea1 = new Linea(numLinea);                
+            }            
         }
         ASM.CerrarLectura();       
         
         auxFile = ASM.archivo;
         INST.CreaINST(auxFile);
         ERR.CreaERR(auxFile);
+        TDS.CreaTDS(auxFile);
         INST.AbrirINST();
         ERR.AbrirERR();
-        
-        while(!lista.isEmpty()){
+        TDS.AbrirTDS();
+
+        while(!lista.isEmpty()) {
             lineaAux = lista.remove(0);    
-            if(!lineaAux.esComentario && lineaAux.tipoError == null)
+            if(!lineaAux.esComentario && lineaAux.tipoError == null) {
+                if(!lineaAux.etiqueta.equals("NULL")) {
+                   INST.EscribeLineaINST(lineaAux);
+                   TDS.EscribeLineaTDS(lineaAux);
+                }
+                else    
                 INST.EscribeLineaINST(lineaAux);
+            }
             else if(lineaAux.tipoError != null)
                 ERR.EscribeLineaERR(lineaAux);                      
         }
@@ -72,6 +91,7 @@ public class Ensamblador {
         }
         
         INST.CerrarEscritura();
-        ERR.CerrarEscritura();        
+        ERR.CerrarEscritura();
+        TDS.CerrarEscritura();  
     }
 }

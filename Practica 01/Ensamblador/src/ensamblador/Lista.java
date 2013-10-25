@@ -56,12 +56,12 @@ public class Lista {
         expCorrecta = false;
         while(reco != null) {
             if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.compareTo("0") > 0 && op != "NULL") {
-                modos = modos + reco.modo;
+                modos = modos + reco.modo + " " +reco.totalBytes;
                 modos = modos + "|";
                 expCorrecta = true;
             }
             else if(inst.toUpperCase().equals(reco.instruccion) && reco.byteporCalcular.equals("0") && op == "NULL") {
-                modos = modos + reco.modo;
+                modos = modos + reco.modo + " " +reco.totalBytes;
                 modos = modos + "|";
                 expCorrecta = true;
             } 
@@ -70,7 +70,7 @@ public class Lista {
                 bandera = false;
             }
             else if(inst.toUpperCase().equals(reco.instruccion) && reco.modo.equals("INH") && reco.byteporCalcular.compareTo("0") > 0 && op == "NULL") {
-                modos = modos + reco.modo;
+                modos = modos + reco.modo + " " +reco.totalBytes;
                 modos = modos + "|";
                 expCorrecta = true;
             }
