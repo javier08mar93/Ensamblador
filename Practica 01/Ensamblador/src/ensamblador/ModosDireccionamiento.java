@@ -143,7 +143,7 @@ public class ModosDireccionamiento {
         int valor = 0;
         if(ope.charAt(0) == '#') {
             formaIMM = true;
-            if(ope.charAt(1) == '@'  && ope.substring(2, ope.length()).matches("[0-9]+"))        
+            if(ope.charAt(1) == '@'  && ope.substring(2, ope.length()).matches("[0-7]+"))        
                 valor = ValorOperando(ope.substring(1, ope.length()), 8);                
             else if(ope.charAt(1) == '$' && ope.substring(2, ope.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(ope.substring(1, ope.length()), 8);
@@ -187,7 +187,7 @@ public class ModosDireccionamiento {
         tipoModo = " ";
         int valor = 0;
         if(ope.charAt(0) == '@' || ope.charAt(0) == '$' || ope.charAt(0) == '%' || ope.matches("(-)?[0-9]+")) {    
-            if(ope.charAt(0) == '@' && ope.substring(1, ope.length()).matches("[0-9]+"))
+            if(ope.charAt(0) == '@' && ope.substring(1, ope.length()).matches("[0-7]+"))
                 valor = ValorOperando(ope, 8);                 
             else if(ope.charAt(0) == '$' && ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(ope, 8);
@@ -226,7 +226,7 @@ public class ModosDireccionamiento {
         int valor = 0;
         if(ope.charAt(0) == '@' || ope.charAt(0) == '$' || ope.charAt(0) == '%' || ope.matches("(-)?[0-9]+") || ope.matches("[A-Za-z0-9]+")) {         
             formaEXT = true;
-            if(ope.charAt(0) == '@'  && ope.substring(1, ope.length()).matches("[0-9]+"))
+            if(ope.charAt(0) == '@'  && ope.substring(1, ope.length()).matches("[0-7]+"))
                 valor = ValorOperando(ope, 16);                
             else if(ope.charAt(0) == '$' && ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(ope, 16);
@@ -306,7 +306,7 @@ public class ModosDireccionamiento {
             }           
         }
         else if(mod2) {
-            if(numero.charAt(0) == '@'  && numero.substring(1, numero.length()).matches("[0-9]+"))
+            if(numero.charAt(0) == '@'  && numero.substring(1, numero.length()).matches("[0-7]+"))
                 valor = ValorOperando(numero, 5);                
             else if(numero.charAt(0) == '$' && numero.substring(1, numero.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(numero, 5);
@@ -367,7 +367,7 @@ public class ModosDireccionamiento {
         else mod2 = false;
         
         if(mod2) {
-            if(numero.charAt(0) == '@' && numero.substring(1, numero.length()).matches("[0-9]+"))
+            if(numero.charAt(0) == '@' && numero.substring(1, numero.length()).matches("[0-7]+"))
                 valor = ValorOperando(numero, 9);                
             else if(numero.charAt(0) == '$' && numero.substring(1, numero.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(numero, 9);
@@ -431,7 +431,7 @@ public class ModosDireccionamiento {
         
         if(mod2) {
             formaIDX2 = true;
-            if(numero.charAt(0) == '@' && numero.substring(1, numero.length()).matches("[0-9]+"))
+            if(numero.charAt(0) == '@' && numero.substring(1, numero.length()).matches("[0-7]+"))
                 valor = ValorOperando(numero, 16);                
             else if(numero.charAt(0) == '$' && numero.substring(1, numero.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(numero, 16);
@@ -496,7 +496,7 @@ public class ModosDireccionamiento {
         
         if(mod2) {
             formaIDX2C = true;
-            if(numero.charAt(1) == '@' && numero.substring(2, numero.length()).matches("[0-9]+"))
+            if(numero.charAt(1) == '@' && numero.substring(2, numero.length()).matches("[0-7]+"))
                 valor = ValorOperando(numero.substring(1, numero.length()), 16);                
             else if(numero.charAt(1) == '$' && numero.substring(2, numero.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(numero.substring(1, numero.length()), 16);
@@ -540,8 +540,6 @@ public class ModosDireccionamiento {
         String numero = null, registro = null;
         
         if(ope.matches("(@|-)?[0-9]+,-[A-Za-z]+") || ope.matches("\\%[0-1]+,-[A-Za-z]+") || ope.matches("(@|-)?[0-9]+,\\+[A-Za-z]+") || ope.matches("\\%[0-1]+,\\+[A-Za-z]+") || ope.matches("(@|-)?[0-9]+,[A-Za-z]+\\-") || ope.matches("\\%[0-1]+,[A-Za-z]+\\-") || ope.matches("(@|-)?[0-9]+,[A-Za-z]+\\+") || ope.matches("\\%[0-1]+,[A-Za-z]+\\+")){
-        //if(ope.matches("(@)?[0-9]+,-[A-Za-z+-]+") || ope.matches("\\%[0-1]+,-[A-Za-z+1]+") || ope.matches("(@)?[0-9]+,\\+[A-Za-z+-]+") || ope.matches("\\%[0-1]+,\\+[A-Za-z+-]+") || ope.matches("(@)?[0-9]+,[A-Za-z+-]+\\-") || ope.matches("\\%[0-1]+,[A-Za-z+-]+\\-") || ope.matches("(@)?[0-9]+,[A-Za-z+-]+\\+") || ope.matches("\\%[0-1]+,[A-Za-z+-]+\\+")){
-        
             StringTokenizer token = new StringTokenizer(ope, "\n", true);
             numero = token.nextToken(",");
             token.nextToken(",");
@@ -549,7 +547,6 @@ public class ModosDireccionamiento {
             mod2 = true;            
         }
         else if(ope.charAt(0) == '$' && (ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,-[A-Za-z]+") || ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,\\+[A-Za-z]+") || ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,[A-Za-z]+\\-") || ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,[A-Za-z]+\\+"))){
-        //else if(ope.charAt(0) == '$' && (ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,-[A-Za-z+-]+") || ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,\\+[A-Za-z+-]+") || ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,[A-Za-z+-]+\\-") || ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+,[A-Za-z+-]+\\+"))){
             StringTokenizer token = new StringTokenizer(ope, "\n", true);
             numero = token.nextToken(",");
             token.nextToken(",");
@@ -560,7 +557,7 @@ public class ModosDireccionamiento {
         
         if(mod2) {
             formaIDX_ID = true;
-           if(numero.charAt(0) == '@' && numero.substring(1, numero.length()).matches("[0-9]+")) 
+           if(numero.charAt(0) == '@' && numero.substring(1, numero.length()).matches("[0-7]+")) 
                 valor = ValorOperando(numero, 3);                
             else if(numero.charAt(0) == '$' && numero.substring(1, numero.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(numero, 3);
@@ -661,8 +658,6 @@ public class ModosDireccionamiento {
             mod2 = true;            
         }
         else mod2 = false;
-        //if(ope.charAt(0) == '[' || ope.charAt(ope.length()-1) == ']')
-         //   formaOperando = true;
         
         if(mod2) {
             formaIDX_ACU_IND = true;
@@ -704,7 +699,7 @@ public class ModosDireccionamiento {
         int valor = 0;
         if(ope.charAt(0) == '@' || ope.charAt(0) == '$' || ope.charAt(0) == '%' || ope.matches("(-)?[0-9]+") || ope.matches("[A-Za-z0-9]+")) {    
             formaREL = true;
-            if(ope.charAt(0) == '@' && ope.substring(1, ope.length()).matches("[0-9]+"))
+            if(ope.charAt(0) == '@' && ope.substring(1, ope.length()).matches("[0-7]+"))
                 valor = ValorOperando(ope, 16);                
             else if(ope.charAt(0) == '$' && ope.substring(1, ope.length()).matches("[A-Fa-f0-9]+"))
                 valor = ValorOperando(ope, 16);
